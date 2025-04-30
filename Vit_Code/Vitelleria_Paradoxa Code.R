@@ -239,7 +239,7 @@ plot(Vit_cv2)
 
 
 ##=========================================================================
-#Thresholding the vegetationn index
+#Thresholding the vegetation index
 #=========================================================================
 #Calculating modal or peak of NDVI
 # create mode function first
