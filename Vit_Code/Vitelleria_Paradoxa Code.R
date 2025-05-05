@@ -19,6 +19,7 @@ library(ggplot2)    #plot and graph
 library(ggpubr)# for ggpar,ggarrange
 library(dismo)#for GBM dismo
 library(neuralnet)#for artificial neural network (ANN)
+library(Metrics)#for auc
 library(XLS)#write to excel
 library(xlsx)#write to excel
 
@@ -45,15 +46,15 @@ summary(ClVitdata)
 ##convert retained non duplicated data to point data
 #=========================================================================
 proj4Str <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-Vit_ThinPoints <- SpatialPointsDataFrame(coords = ClVitdata[,c("decimalLongitude","decimalLatitude")], data = ClVitdata, proj4string = CRS(proj4Str))
-plot(Vit_ThinPoints,  pch = 16, col ="red")
+Vit_Points <- SpatialPointsDataFrame(coords = ClVitdata[,c("decimalLongitude","decimalLatitude")], data = ClVitdata, proj4string = CRS(proj4Str))
+plot(Vit_Points,  pch = 16, col ="red")
 #=========================================================================
 ##load study area shapefile and crop the occurence point to the extent
 #=========================================================================
 #Vitellaria paradoxa study area extent shapefile
 VitExt <- readOGR("VitSelVect.shp")
 #intersect or crop to the study area extent
-Vitextc <- intersect(Vit_ThinPoints, VitExt)
+Vitextc <- intersect(Vit_Points, VitExt)
 plot(Vitextc, col="green", pch=16, add=TRUE)
 plot(VitExt, add=TRUE)
 head(Vitextc, 10)
@@ -140,7 +141,7 @@ tail(vitDF, 10)
 #Model fitting BRT
 GBM_Vit <- gbm.step(data=vitDF, gbm.x = 2:10, gbm.y = 1, #x= environmental variable column, y=species or response varible column
                     family = "gaussian", tree.complexity = 5,
-                    learning.rate = 0.001, bag.fraction = 0.5) #trees adding n.trees makes difference;look good use for reference values
+                    learning.rate = 0.001, bag.fraction = 0.5) 
 #response curve
 par(mfrow = c(1,1))
 gbm.plot(GBM_Vit, write.title = TRUE)#group plot
@@ -169,6 +170,7 @@ partialPlot(RF_vit, vitDF, "EVI", plot = TRUE)
 ##Model fitting ANN
 #Nueralnet may have to be scaled or normalised
 scaleddata<-scale(vitDF)
+# or
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
 }
@@ -201,11 +203,9 @@ predicted_class_RF <- as.factor(ifelse(Pred_test_vit >= 0.5,
 
 confusionMatrix(predicted_class_RF, as.factor(test_data$Vit_pb1))#predicted classes, train test data$species to evaluate as in dataframe column
 
-#AUC_RF
+#Assesss the AUC_RF
 AUC_RFvit<- Metrics::auc(test_data$Vit_pb1, Pred_test_vit)#test data, and pred of train model and test data 
 AUC_RFvit
-0.9
-
 
 #Confusion matrix, calculating Kappa, accuracy (GBM)
 Pred_test_vit2 <- predict(GBM_Vit, newdata =  test_data)#train model, and new train_test data to predict using test data
@@ -214,6 +214,10 @@ predicted_class_GBM <- as.factor(ifelse(Pred_test_vit2 >= 0.5,
 
 confusionMatrix(predicted_class_GBM, as.factor(test_data$Vit_pb1))#predicted classes, train test data$species to evaluate as in dataframe column
 
+#Assess the AUC_GBM
+AUC_GBMvit<- Metrics::auc(test_data$Vit_pb1, Pred_test_vit2)#test data, and pred of train model and test data 
+AUC_GBMvit
+
 ##Confusion matrix, calculating Kappa, accuracy (ANN)
 Pred_test_vit3 <- predict(NNVit, newdata =  test_data)#train model, and new train_test data to predict using test data
 predicted_class_ANN <- as.factor(ifelse(Pred_test_vit3 >= 0.5, 
@@ -221,7 +225,7 @@ predicted_class_ANN <- as.factor(ifelse(Pred_test_vit3 >= 0.5,
 
 confusionMatrix(predicted_class_ANN, as.factor(test_data$Vit_pb1))#predicted classes, train test data$species to evaluate as in dataframe column
 
-#AUC_ANN
+#Asess the AUC_ANN
 AUC_ANNvit<- Metrics::auc(test_data$Vit_pb1, Pred_test_vit3)#test data, and pred of train model and test data 
 AUC_ANNvit
 #=========================================================================
