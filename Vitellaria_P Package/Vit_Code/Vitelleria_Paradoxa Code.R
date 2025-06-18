@@ -176,10 +176,11 @@ NNVit = neuralnet(
   Vit_pb1~.,
   data=scaleddata,
   hidden=c(4,2),
+  rep=10,
   linear.output = FALSE
 )
 #plot model fit
-plot(NNVit,rep = "best")
+plot(NNVit,rep = 10)
 #prediction
 Pred_NNVit <- predict(StackIndex, NNVit)
 plot(Pred_NNVit)# poor prediction
