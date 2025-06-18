@@ -240,10 +240,10 @@ plot(Vit_cv2)
 
 
 ##=========================================================================
-#Thresholding the vegetationn index
+#Thresholding the vegetation index
 #=========================================================================
 #Calculating modal or peak of NDVI
-# create mode function first
+# create model function first
 mode <- function(x, na.rm = FALSE) {
   
   if(na.rm){ #if na.rm is TRUE, remove NA values from input x
