@@ -110,7 +110,7 @@ SLAVI <- MB5/(MB4 + MB7)
 #Normalized water index(NDWI), water stress
 NDWI <-  (MB3 - MB5)/(MB3 + MB5)
 #Modified Normalized water index(NDWI), water stress
-MNDWI <-  (MB3 - MB7)/(MB3 + MB7)
+MNDWI <-  (MB3 - MB6)/(MB3 + MB6)
 
 #=========================================================================
 ##stack all vegetation index and climate data
