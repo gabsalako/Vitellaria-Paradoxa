@@ -85,7 +85,7 @@ head(Vitextc, 10)
 MB3 <- raster("GrBand3.tif")
 MB4 <- raster("ReBand4.tif")
 MB5 <- raster("NIRBand5.tif")
-MB7 <- raster("SWBand7.tif")
+MB6 <- raster("SWBand6.tif")
 MBwet <- raster("Wet.tif")/10 #precipitation data are divided by 10
 MBdry <- raster("dry.tif")/10
 MBrain <- raster("Precip2.tif")
